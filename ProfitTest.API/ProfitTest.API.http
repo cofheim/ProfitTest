@@ -1,0 +1,6 @@
+@ProfitTest.API_HostAddress = http://localhost:5006
+
+GET {{ProfitTest.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
