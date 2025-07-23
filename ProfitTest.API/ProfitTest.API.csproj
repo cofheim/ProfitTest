@@ -22,4 +22,12 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProfitTest.Application\ProfitTest.Application.csproj" />
+    <ProjectReference Include="..\ProfitTest.Contracts\ProfitTest.Contracts.csproj" />
+    <ProjectReference Include="..\ProfitTest.Domain\ProfitTest.Domain.csproj" />
+    <ProjectReference Include="..\ProfitTest.Infrastructure\ProfitTest.Infrastructure.csproj" />
+    <ProjectReference Include="..\ProfitTest.Persistence\ProfitTest.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

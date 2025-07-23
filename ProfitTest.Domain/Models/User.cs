@@ -16,15 +16,24 @@ namespace ProfitTest.Domain.Models
         public DateTime CreatedAt { get; }
         public DateTime? LastLoginAt { get; private set; }
 
-        public static User Create(string userName, string passwordHash)
+        public static (User? User, string Error) Create(string userName, string passwordHash)
         {
+            var error = string.Empty;
+
             if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentException("Имя пользователя не может быть пустым", nameof(userName));
+            {
+                error = "Имя пользователя не может быть пустым";
+                return (null, error);
+            }
 
             if (string.IsNullOrWhiteSpace(passwordHash))
-                throw new ArgumentException("Хэш пароля не может быть пустым", nameof(passwordHash));
+            {
+                error = "Хеш пароля не может быть пустым";
+                return (null, error);
+            }
 
-            return new User(userName, passwordHash);
+            var user = new User(userName, passwordHash);
+            return (user, error);
         }
 
         public void UpdateLastLogin()

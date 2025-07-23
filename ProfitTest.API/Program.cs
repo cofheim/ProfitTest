@@ -1,8 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using ProfitTest.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
 
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
+
+services.AddControllers();
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+
+services.AddDbContext<ProfitTestDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ProfitTestDbContext)));
+});
 
 var app = builder.Build();
 
