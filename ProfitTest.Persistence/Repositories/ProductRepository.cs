@@ -14,18 +14,21 @@ namespace ProfitTest.Persistence.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        // получение по id 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
             var entity = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
             return entity?.ToDomain();
         }
 
+        // получение всех
         public async Task<List<Product>> GetAllAsync()
         {
             var entities = await _context.Products.ToListAsync();
             return entities.Select(x => x.ToDomain()).ToList();
         }
 
+        // поиск по имени
         public async Task<List<Product>> SearchByNameAsync(string nameQuery)
         {
             if (string.IsNullOrWhiteSpace(nameQuery))
@@ -38,8 +41,10 @@ namespace ProfitTest.Persistence.Repositories
             return entities.Select(x => x.ToDomain()).ToList();
         }
 
+        // фильтрация по периоду
         public async Task<List<Product>> FilterByPeriodAsync(DateTime start, DateTime? end)
         {
+            // запрос где период действия цены (ПДЦ) ОТ меньше чем стартовое значение и ((ПДЦ) ДО имеет значение или ПДЦ больше либо равно стартовому значению
             var query = _context.Products.Where(x => 
                 (x.PriceValidFrom <= start) && 
                 (!x.PriceValidTo.HasValue || x.PriceValidTo >= start));
@@ -51,10 +56,12 @@ namespace ProfitTest.Persistence.Repositories
                     (!x.PriceValidTo.HasValue || x.PriceValidTo >= end.Value));
             }
 
+            // материализуем запрос и сохраняем в "entities"
             var entities = await query.ToListAsync();
-            return entities.Select(x => x.ToDomain()).ToList();
+            return entities.Select(x => x.ToDomain()).ToList(); // преобразуем сущности в доменные модели и материализуем
         }
 
+        // создание
         public async Task AddAsync(Product product)
         {
             if (product == null)
@@ -65,6 +72,7 @@ namespace ProfitTest.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        //  обновление
         public async Task UpdateAsync(Product product)
         {
             if (product == null)
@@ -82,6 +90,7 @@ namespace ProfitTest.Persistence.Repositories
                 throw new InvalidOperationException($"Товар с ID {product.Id} не найден");
         }
 
+        // удаление
         public async Task DeleteAsync(Guid id)
         {
             var deleted = await _context.Products

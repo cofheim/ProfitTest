@@ -7,14 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Messaging\Settings\" />
-    <Folder Include="Messaging\ProducerLogic\" />
-    <Folder Include="Messaging\ConsumerLogic\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Confluent.Kafka" Version="2.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
@@ -34,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProfitTest.Application\ProfitTest.Application.csproj" />
     <ProjectReference Include="..\ProfitTest.Domain\ProfitTest.Domain.csproj" />
   </ItemGroup>
 

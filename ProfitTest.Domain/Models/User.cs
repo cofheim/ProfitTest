@@ -12,10 +12,12 @@ namespace ProfitTest.Domain.Models
 
         public Guid Id { get; }
         public string UserName { get; private set; }
-        public string PasswordHash { get; private set; }
-        public DateTime CreatedAt { get; }
-        public DateTime? LastLoginAt { get; private set; }
+        public string PasswordHash { get; private set; } // хэш пароля
+        public DateTime CreatedAt { get; } // дата создания пользователя
+        public DateTime? LastLoginAt { get; private set; } // дата последнего входа пользователя
 
+
+        // фабричный метод для создания пользователя
         public static (User? User, string Error) Create(string userName, string passwordHash)
         {
             var error = string.Empty;
@@ -36,6 +38,7 @@ namespace ProfitTest.Domain.Models
             return (user, error);
         }
 
+        // обновление даты последнего входа
         public void UpdateLastLogin()
         {
             LastLoginAt = DateTime.UtcNow;

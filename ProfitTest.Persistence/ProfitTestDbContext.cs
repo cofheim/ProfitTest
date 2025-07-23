@@ -10,9 +10,11 @@ namespace ProfitTest.Persistence
         {
         }
 
-        public DbSet<UserEntity> Users { get; set; } = null!;
-        public DbSet<ProductEntity> Products { get; set; } = null!;
+        // создаём таблицы
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<ProductEntity> Products { get; set; }
 
+        // применяем конфигурации
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());

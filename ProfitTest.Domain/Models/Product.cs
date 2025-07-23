@@ -14,11 +14,12 @@ namespace ProfitTest.Domain.Models
 
         public Guid Id { get; }
         public string Name { get; private set; }
-        public decimal Price { get; private set; }
-        public DateTime PriceValidFrom { get; private set; }
-        public DateTime? PriceValidTo { get; private set; }
+        public decimal Price { get; private set; } // цена
+        public DateTime PriceValidFrom { get; private set; } // период действия цены ОТ
+        public DateTime? PriceValidTo { get; private set; } // период действия цены ДО
         public DateTime CreatedAt { get; }
 
+        // фабричный метод для создания товара
         public static (Product? Product, string Error) Create(
             string name,
             decimal price,
@@ -49,6 +50,7 @@ namespace ProfitTest.Domain.Models
             return (product, error);
         }
 
+        // фабричный метод для обновления товара
         public (bool Success, string Error) Update(
             string name,
             decimal price,

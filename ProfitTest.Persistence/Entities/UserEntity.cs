@@ -4,8 +4,8 @@ namespace ProfitTest.Persistence.Entities
     {
         public Guid Id { get; set; }
         public string UserName { get; set; }
-        public string PasswordHash { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? LastLoginAt { get; set; }
+        public string PasswordHash { get; set; } // хэш пароля
+        public DateTime CreatedAt { get; set; } // дата создания
+        public DateTime? LastLoginAt { get; set; } // дата последнего входа
     }
 }

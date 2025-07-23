@@ -9,6 +9,7 @@ namespace ProfitTest.Infrastructure.Authentication
 {
     public class JwtService(IOptions<AuthSettings> options)
     {
+        // генерация jwt токена
         public string GenerateToken(User user)
         {
             var claims = new List<Claim> {

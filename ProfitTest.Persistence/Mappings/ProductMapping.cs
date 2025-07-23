@@ -5,6 +5,7 @@ namespace ProfitTest.Persistence.Mappings
 {
     public static class ProductMapping
     {
+        // из доменной в сущность
         public static ProductEntity ToEntity(this Product domain)
         {
             if (domain == null)
@@ -21,6 +22,7 @@ namespace ProfitTest.Persistence.Mappings
             };
         }
 
+        // из сущности в доменную
         public static Product ToDomain(this ProductEntity entity)
         {
             if (entity == null)

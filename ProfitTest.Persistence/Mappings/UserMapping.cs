@@ -5,6 +5,7 @@ namespace ProfitTest.Persistence.Mappings
 {
     public static class UserMapping
     {
+        // из доменой в сущность
         public static UserEntity ToEntity(this User domain)
         {
             if (domain == null)
@@ -20,6 +21,7 @@ namespace ProfitTest.Persistence.Mappings
             };
         }
 
+        // из сущности в доменную
         public static User ToDomain(this UserEntity entity)
         {
             if (entity == null)

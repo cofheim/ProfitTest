@@ -14,12 +14,14 @@ namespace ProfitTest.Persistence.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        // получение по id
         public async Task<User?> GetByIdAsync(Guid id)
         {
             var entity = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
             return entity?.ToDomain();
         }
 
+        // получение по имени пользователя
         public async Task<User?> GetByUsernameAsync(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -29,6 +31,7 @@ namespace ProfitTest.Persistence.Repositories
             return entity?.ToDomain();
         }
 
+        // создание
         public async Task AddAsync(User user)
         {
             if (user == null)
@@ -43,6 +46,7 @@ namespace ProfitTest.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        // обновление
         public async Task UpdateAsync(User user)
         {
             if (user == null)
