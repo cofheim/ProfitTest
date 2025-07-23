@@ -14,7 +14,7 @@ namespace ProfitTest.Persistence.Configurations
             builder.Property(p => p.PasswordHash).IsRequired();
             builder.Property(p => p.CreatedAt).IsRequired().HasDefaultValue(DateTime.UtcNow);
             builder.Property(p => p.LastLoginAt).IsRequired(false);
-            builder.HasIndex(p => p.UserName).IsUnique();
+            builder.HasIndex(p => p.UserName).IsUnique().HasDatabaseName("IX_UserName");
         }
     }
 }

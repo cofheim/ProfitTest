@@ -8,7 +8,7 @@ namespace ProfitTest.Application.Interfaces
         Task<List<Product>> GetAllAsync();
         Task<List<Product>> SearchByNameAsync(string nameQuery);
         Task<List<Product>> FilterByPeriodAsync(DateTime start, DateTime? end);
-        Task CreateAsync(Product product);
+        Task AddAsync(Product product);
         Task UpdateAsync(Product product);
         Task DeleteAsync(Guid id);
     }

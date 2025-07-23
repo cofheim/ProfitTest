@@ -6,7 +6,7 @@ namespace ProfitTest.Application.Interfaces
     {
         Task<User?> GetByIdAsync(Guid id);
         Task<User?> GetByUsernameAsync(string username);
-        Task CreateAsync(User user);
+        Task AddAsync(User user);
         Task UpdateAsync(User user);
     }
 }
