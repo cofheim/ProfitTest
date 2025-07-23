@@ -1,56 +1,95 @@
+using Microsoft.Extensions.Logging;
 using ProfitTest.Application.Interfaces;
+using ProfitTest.Application.Interfaces.Messaging;
+using ProfitTest.Contracts.Messages;
 using ProfitTest.Domain.Models;
 
 namespace ProfitTest.Application.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _repository;
-        public ProductService(IProductRepository repository)
+        private readonly IKafkaProducer<ProductCreatedMessage> _createProducer;
+        private readonly IKafkaProducer<ProductUpdatedMessage> _updateProducer;
+        private readonly IKafkaProducer<ProductDeletedMessage> _deleteProducer;
+        private readonly ILogger<ProductService> _logger;
+
+        public ProductService(
+            IKafkaProducer<ProductCreatedMessage> createProducer,
+            IKafkaProducer<ProductUpdatedMessage> updateProducer,
+            IKafkaProducer<ProductDeletedMessage> deleteProducer,
+            ILogger<ProductService> logger)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _createProducer = createProducer;
+            _updateProducer = updateProducer;
+            _deleteProducer = deleteProducer;
+            _logger = logger;
         }
 
         // создание товара
-        public async Task<(bool Success, string Error)> CreateProductAsync(string name, decimal price, DateTime validFrom, DateTime? validTo)
+        public async Task<(bool Success, string Error)> CreateProductAsync(string name,
+            decimal price,
+            DateTime validFrom,
+            DateTime? validTo)
         {
-            // создаем товар фабричным методом
-            var (product, error) = Product.Create(name, price, validFrom, validTo);
-            if (product == null)
-                return (false, error);
+            try
+            {
+                var message = new ProductCreatedMessage(
+                    name,
+                    price,
+                    validFrom,
+                    validTo);
 
-            await _repository.AddAsync(product);
-            return (true, string.Empty);
+                await _createProducer.ProduceAsync(message, CancellationToken.None);
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при отправке сообщения о создании товара");
+                return (false, "Не удалось создать товар");
+            }
         }
 
         // обновление товара
-        public async Task<(bool Success, string Error)> UpdateProductAsync(Guid id, string name, decimal price, DateTime validFrom, DateTime? validTo)
+        public async Task<(bool Success, string Error)> UpdateProductAsync(
+            Guid id,
+            string name,
+            decimal price,
+            DateTime validFrom,
+            DateTime? validTo)
         {
-            // находим товар по id, проверяем его существование
-            var product = await _repository.GetByIdAsync(id);
-            if (product == null)
-                return (false, $"Товар с ID {id} не найден");
+            try
+            {
+                var message = new ProductUpdatedMessage(
+                    id,
+                    name,
+                    price,
+                    validFrom,
+                    validTo);
 
-            // обновляем товар
-            var (success, error) = product.Update(name, price, validFrom, validTo);
-            if (!success)
-                return (false, error);
-
-            await _repository.UpdateAsync(product);
-            return (true, string.Empty);
+                await _updateProducer.ProduceAsync(message, CancellationToken.None);
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при отправке сообщения об обновлении товара");
+                return (false, "Не удалось обновить товар");
+            }
         }
 
         // удаление товара
         public async Task<(bool Success, string Error)> DeleteProductAsync(Guid id)
         {
-            // находим товар по id, проверяем его существование
-            var product = await _repository.GetByIdAsync(id);
-            if (product == null)
-                return (false, $"Товар с ID {id} не найден");
-
-            // удаляем товар если нашли
-            await _repository.DeleteAsync(id);
-            return (true, string.Empty);
+            try
+            {
+                var message = new ProductDeletedMessage(id);
+                await _deleteProducer.ProduceAsync(message, CancellationToken.None);
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при отправке сообщения об удалении товара");
+                return (false, "Не удалось удалить товар");
+            }
         }
     }
 }

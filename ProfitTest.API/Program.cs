@@ -34,10 +34,13 @@ services.AddScoped<IMessageHandler<ProductDeletedMessage>, ProductMessageHandler
 
 // кафка
 var kafkaConfig = builder.Configuration.GetSection("Kafka:Product");
+
+// продюсеры
 services.AddProducer<ProductCreatedMessage>(kafkaConfig);
 services.AddProducer<ProductUpdatedMessage>(kafkaConfig);
 services.AddProducer<ProductDeletedMessage>(kafkaConfig);
 
+// консьюмеры
 services.AddConsumer<ProductCreatedMessage, ProductMessageHandler>(kafkaConfig);
 services.AddConsumer<ProductUpdatedMessage, ProductMessageHandler>(kafkaConfig);
 services.AddConsumer<ProductDeletedMessage, ProductMessageHandler>(kafkaConfig);
