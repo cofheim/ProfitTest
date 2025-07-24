@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ProfitTest.Domain.Models;
 
-namespace ProfitTest.Infrastructure.Authentication
+namespace ProfitTest.Application.Authentication
 {
     public class JwtService(IOptions<AuthSettings> options)
     {

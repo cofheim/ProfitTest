@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using ProfitTest.Application.Authentication;
 using ProfitTest.Application.Handlers.Products;
 using ProfitTest.Application.Interfaces;
 using ProfitTest.Application.Interfaces.Messaging;
 using ProfitTest.Application.Services;
 using ProfitTest.Contracts.Messages;
-using ProfitTest.Infrastructure.Authentication;
 using ProfitTest.Infrastructure.Messaging.Settings;
 using ProfitTest.Persistence;
 using ProfitTest.Persistence.Repositories;
@@ -36,14 +36,14 @@ services.AddScoped<IMessageHandler<ProductDeletedMessage>, ProductMessageHandler
 var kafkaConfig = builder.Configuration.GetSection("Kafka:Product");
 
 // продюсеры
-services.AddProducer<ProductCreatedMessage>(kafkaConfig);
-services.AddProducer<ProductUpdatedMessage>(kafkaConfig);
-services.AddProducer<ProductDeletedMessage>(kafkaConfig);
+services.AddProducer<ProductCreatedMessage>(kafkaConfig, "ProductCreated");
+services.AddProducer<ProductUpdatedMessage>(kafkaConfig, "ProductUpdated");
+services.AddProducer<ProductDeletedMessage>(kafkaConfig, "ProductDeleted");
 
 // консьюмеры
-services.AddConsumer<ProductCreatedMessage, ProductMessageHandler>(kafkaConfig);
-services.AddConsumer<ProductUpdatedMessage, ProductMessageHandler>(kafkaConfig);
-services.AddConsumer<ProductDeletedMessage, ProductMessageHandler>(kafkaConfig);
+services.AddConsumer<ProductCreatedMessage, ProductMessageHandler>(kafkaConfig, "ProductCreated");
+services.AddConsumer<ProductUpdatedMessage, ProductMessageHandler>(kafkaConfig, "ProductUpdated");
+services.AddConsumer<ProductDeletedMessage, ProductMessageHandler>(kafkaConfig, "ProductDeleted");
 
 // БД
 services.AddDbContext<ProfitTestDbContext>(options =>

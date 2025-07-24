@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ProfitTest.Infrastructure.Authentication
+namespace ProfitTest.Application.Authentication
 {
     public static class AuthExtensions
     {

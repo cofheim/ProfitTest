@@ -1,4 +1,4 @@
-namespace ProfitTest.Infrastructure.Authentication
+namespace ProfitTest.Application.Authentication
 {
     public class AuthSettings
     {

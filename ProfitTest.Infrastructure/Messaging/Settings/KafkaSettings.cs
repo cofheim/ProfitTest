@@ -4,6 +4,6 @@ namespace ProfitTest.Infrastructure.Messaging.Settings
     {
         public string BootstrapServers { get; set; }
         public string GroupId { get; set; }
-        public Dictionary<string, string> Topics { get; set; }
+        public Dictionary<string, string> Topics { get; set; } = new();
     }
 }
