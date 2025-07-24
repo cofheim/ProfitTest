@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Confluent.Kafka.Admin;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger<KafkaConsumer<TMessage>> _logger;
         private readonly string _topic;
+        private readonly string _bootstrapServers;
 
         public KafkaConsumer(
             IOptions<KafkaSettings> kafkaSettings,
@@ -21,11 +23,14 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
             ILogger<KafkaConsumer<TMessage>> logger,
             string topicKey)
         {
+            _bootstrapServers = kafkaSettings.Value.BootstrapServers;
             var config = new ConsumerConfig
             {
-                BootstrapServers = kafkaSettings.Value.BootstrapServers,
+                BootstrapServers = _bootstrapServers,
                 GroupId = kafkaSettings.Value.GroupId,
-                AutoOffsetReset = AutoOffsetReset.Earliest
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                SecurityProtocol = SecurityProtocol.Plaintext,
+                AllowAutoCreateTopics = true
             };
 
             if (!kafkaSettings.Value.Topics.TryGetValue(topicKey, out var topic))
@@ -37,6 +42,36 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
             _consumer = new ConsumerBuilder<string, TMessage>(config)
                 .SetValueDeserializer(new KafkaJsonDeserializer<TMessage>())
                 .Build();
+
+            EnsureTopicExists().GetAwaiter().GetResult();
+        }
+
+        private async Task EnsureTopicExists()
+        {
+            try
+            {
+                using (var adminClient = new AdminClientBuilder(new AdminClientConfig { BootstrapServers = _bootstrapServers }).Build())
+                {
+                    var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
+                    if (!metadata.Topics.Any(t => t.Topic == _topic))
+                    {
+                        await adminClient.CreateTopicsAsync(new TopicSpecification[]
+                        {
+                            new TopicSpecification
+                            {
+                                Name = _topic,
+                                ReplicationFactor = 1,
+                                NumPartitions = 1
+                            }
+                        });
+                        _logger.LogInformation("Топик {Topic} создан", _topic);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при создании топика {Topic}", _topic);
+            }
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -65,10 +100,12 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
                     catch (ConsumeException ex)
                     {
                         _logger.LogError(ex, "Ошибка при получении сообщения из топика {Topic}", _topic);
+                        await Task.Delay(1000, cancellationToken); // Добавляем задержку при ошибке
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Ошибка при обработке сообщения из топика {Topic}", _topic);
+                        await Task.Delay(1000, cancellationToken); // Добавляем задержку при ошибке
                     }
                 }
             }

@@ -15,7 +15,9 @@ namespace ProfitTest.Infrastructure.Messaging.ProducerLogic
         {
             var config = new ProducerConfig
             {
-                BootstrapServers = kafkaSettings.Value.BootstrapServers
+                BootstrapServers = kafkaSettings.Value.BootstrapServers,
+                SecurityProtocol = SecurityProtocol.Plaintext,
+                MessageTimeoutMs = 10000
             };
 
             _producer = new ProducerBuilder<string, TMessage>(config)
@@ -23,20 +25,27 @@ namespace ProfitTest.Infrastructure.Messaging.ProducerLogic
                 .Build();
 
             if (!kafkaSettings.Value.Topics.TryGetValue(topicKey, out var topic))
-                throw new ArgumentException($"Topic � ������ {topicKey} �� ������ � ������������");
+                throw new ArgumentException($"Topic с ключом {topicKey} не найден в конфигурации");
 
             _topic = topic;
         }
 
-
         public async Task ProduceAsync(TMessage message, CancellationToken cancellationToken)
         {
-            await _producer.ProduceAsync(_topic, new Message<string, TMessage>
+            try
             {
-                Key = Guid.NewGuid().ToString(),
-                Value = message
-            }, cancellationToken);
+                await _producer.ProduceAsync(_topic, new Message<string, TMessage>
+                {
+                    Key = Guid.NewGuid().ToString(),
+                    Value = message
+                }, cancellationToken);
+            }
+            catch (ProduceException<string, TMessage> ex)
+            {
+                throw new Exception($"Ошибка при отправке сообщения в топик {_topic}: {ex.Message}", ex);
+            }
         }
+
         public void Dispose()
         {
             _producer?.Dispose();
