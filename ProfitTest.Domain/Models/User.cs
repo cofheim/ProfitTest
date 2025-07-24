@@ -2,43 +2,49 @@ namespace ProfitTest.Domain.Models
 {
     public class User
     {
-        public User(string userName, string passwordHash)
+        private User(string userName, string passwordHash, Guid? id = null, DateTime? createdAt = null, DateTime? lastLoginAt = null)
         {
-            Id = Guid.NewGuid();
+            Id = id ?? Guid.NewGuid();
             UserName = userName;
             PasswordHash = passwordHash;
-            CreatedAt = DateTime.UtcNow;
+            CreatedAt = createdAt ?? DateTime.UtcNow;
+            LastLoginAt = lastLoginAt;
         }
 
         public Guid Id { get; }
         public string UserName { get; private set; }
-        public string PasswordHash { get; private set; } // хэш пароля
-        public DateTime CreatedAt { get; } // дата создания пользователя
-        public DateTime? LastLoginAt { get; private set; } // дата последнего входа пользователя
+        public string PasswordHash { get; private set; } // РҐСЌС€ РїР°СЂРѕР»СЏ
+        public DateTime CreatedAt { get; } // Р”Р°С‚Р° СЃРѕР·РґР°РЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+        public DateTime? LastLoginAt { get; private set; } // Р”Р°С‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕРґР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 
-
-        // фабричный метод для создания пользователя
+        // Р¤Р°Р±СЂРёС‡РЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         public static (User? User, string Error) Create(string userName, string passwordHash)
+        {
+            return Create(userName, passwordHash, null, null, null);
+        }
+
+        // Р¤Р°Р±СЂРёС‡РЅС‹Р№ РјРµС‚РѕРґ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРјРё Р·РЅР°С‡РµРЅРёСЏРјРё
+        public static (User? User, string Error) Create(string userName, string passwordHash, Guid? id, DateTime? createdAt, DateTime? lastLoginAt)
         {
             var error = string.Empty;
 
             if (string.IsNullOrWhiteSpace(userName))
             {
-                error = "Имя пользователя не может быть пустым";
+                error = "РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј";
                 return (null, error);
             }
 
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
-                error = "Хеш пароля не может быть пустым";
+                error = "РҐСЌС€ РїР°СЂРѕР»СЏ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј";
                 return (null, error);
             }
 
-            var user = new User(userName, passwordHash);
+            var user = new User(userName, passwordHash, id, createdAt, lastLoginAt);
             return (user, error);
         }
 
-        // обновление даты последнего входа
+        // РћР±РЅРѕРІР»РµРЅРёРµ РґР°С‚С‹ РїРѕСЃР»РµРґРЅРµРіРѕ РІС…РѕРґР°
         public void UpdateLastLogin()
         {
             LastLoginAt = DateTime.UtcNow;

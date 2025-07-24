@@ -1,4 +1,5 @@
 using Confluent.Kafka;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,15 +11,15 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
     public class KafkaConsumer<TMessage> : BackgroundService
     {
         private readonly IConsumer<string, TMessage> _consumer;
-        private readonly IMessageHandler<TMessage> _messageHandler;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger<KafkaConsumer<TMessage>> _logger;
         private readonly string _topic;
 
         public KafkaConsumer(
-        IOptions<KafkaSettings> kafkaSettings,
-        IMessageHandler<TMessage> messageHandler,
-        ILogger<KafkaConsumer<TMessage>> logger,
-        string topicKey)
+            IOptions<KafkaSettings> kafkaSettings,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<KafkaConsumer<TMessage>> logger,
+            string topicKey)
         {
             var config = new ConsumerConfig
             {
@@ -28,10 +29,10 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
             };
 
             if (!kafkaSettings.Value.Topics.TryGetValue(topicKey, out var topic))
-                throw new ArgumentException($"Topic с ключом {topicKey} не найден в конфигурации");
+                throw new ArgumentException($"Topic СЃ РєР»СЋС‡РѕРј {topicKey} РЅРµ РЅР°Р№РґРµРЅ РІ РєРѕРЅС„РёРіСѓСЂР°С†РёРё");
 
             _topic = topic;
-            _messageHandler = messageHandler;
+            _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
             _consumer = new ConsumerBuilder<string, TMessage>(config)
                 .SetValueDeserializer(new KafkaJsonDeserializer<TMessage>())
@@ -54,15 +55,20 @@ namespace ProfitTest.Infrastructure.Messaging.ConsumerLogic
                     try
                     {
                         var result = _consumer.Consume(cancellationToken);
-                        await _messageHandler.HandleAsync(result.Message.Value, cancellationToken);
+                        
+                        using (var scope = _serviceScopeFactory.CreateScope())
+                        {
+                            var handler = scope.ServiceProvider.GetRequiredService<IMessageHandler<TMessage>>();
+                            await handler.HandleAsync(result.Message.Value, cancellationToken);
+                        }
                     }
                     catch (ConsumeException ex)
                     {
-                        _logger.LogError(ex, "Ошибка при получении сообщения из топика {Topic}", _topic);
+                        _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРѕРѕР±С‰РµРЅРёСЏ РёР· С‚РѕРїРёРєР° {Topic}", _topic);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Ошибка при обработке сообщения из топика {Topic}", _topic);
+                        _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ СЃРѕРѕР±С‰РµРЅРёСЏ РёР· С‚РѕРїРёРєР° {Topic}", _topic);
                     }
                 }
             }

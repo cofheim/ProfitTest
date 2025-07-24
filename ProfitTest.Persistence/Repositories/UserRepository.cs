@@ -52,13 +52,12 @@ namespace ProfitTest.Persistence.Repositories
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var updated = await _context.Users
-                .Where(x => x.Id == user.Id)
-                .ExecuteUpdateAsync(setters => setters
-                    .SetProperty(x => x.LastLoginAt, user.LastLoginAt));
-
-            if (updated == 0)
+            var entity = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+            if (entity == null)
                 throw new InvalidOperationException($"Пользователь с ID {user.Id} не найден");
+
+            entity.LastLoginAt = user.LastLoginAt;
+            await _context.SaveChangesAsync();
         }
     }
 }

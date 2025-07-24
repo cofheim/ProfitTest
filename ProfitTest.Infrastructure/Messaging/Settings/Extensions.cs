@@ -30,13 +30,13 @@ namespace ProfitTest.Infrastructure.Messaging.Settings
             where THandler : class, IMessageHandler<TMessage>
         {
             services.Configure<KafkaSettings>(configSection);
-            services.AddSingleton<IMessageHandler<TMessage>, THandler>();
+            services.AddScoped<IMessageHandler<TMessage>, THandler>();
             services.AddHostedService(sp =>
             {
                 var settings = sp.GetRequiredService<IOptions<KafkaSettings>>();
-                var handler = sp.GetRequiredService<IMessageHandler<TMessage>>();
+                var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
                 var logger = sp.GetRequiredService<ILogger<KafkaConsumer<TMessage>>>();
-                return new KafkaConsumer<TMessage>(settings, handler, logger, topicKey);
+                return new KafkaConsumer<TMessage>(settings, scopeFactory, logger, topicKey);
             });
         }
     }

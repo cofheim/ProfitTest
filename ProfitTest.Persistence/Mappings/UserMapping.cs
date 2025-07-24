@@ -5,7 +5,7 @@ namespace ProfitTest.Persistence.Mappings
 {
     public static class UserMapping
     {
-        // из доменой в сущность
+        // РР· РґРѕРјРµРЅР° РІ СЃСѓС‰РЅРѕСЃС‚СЊ
         public static UserEntity ToEntity(this User domain)
         {
             if (domain == null)
@@ -21,7 +21,7 @@ namespace ProfitTest.Persistence.Mappings
             };
         }
 
-        // из сущности в доменную
+        // РР· СЃСѓС‰РЅРѕСЃС‚Рё РІ РґРѕРјРµРЅ
         public static User ToDomain(this UserEntity entity)
         {
             if (entity == null)
@@ -29,18 +29,16 @@ namespace ProfitTest.Persistence.Mappings
 
             var result = User.Create(
                 entity.UserName,
-                entity.PasswordHash
+                entity.PasswordHash,
+                entity.Id,
+                entity.CreatedAt,
+                entity.LastLoginAt
             );
 
             if (result.User == null)
-                throw new InvalidOperationException($"Невозможно преобразовать сущность в доменную модель: {result.Error}");
+                throw new InvalidOperationException($"РќРµРІРѕР·РјРѕР¶РЅРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ СЃСѓС‰РЅРѕСЃС‚СЊ РІ РґРѕРјРµРЅРЅСѓСЋ РјРѕРґРµР»СЊ: {result.Error}");
 
-            var user = result.User;
-
-            if (entity.LastLoginAt.HasValue)
-                user.UpdateLastLogin();
-
-            return user;
+            return result.User;
         }
     }
 }
