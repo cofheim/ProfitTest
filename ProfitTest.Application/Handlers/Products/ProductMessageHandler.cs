@@ -22,7 +22,7 @@ namespace ProfitTest.Application.Handlers.Products
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // создание товара
+        // СЃРѕР·РґР°РЅРёРµ С‚РѕРІР°СЂР°
         public async Task HandleAsync(ProductCreatedMessage message, CancellationToken cancellationToken)
         {
             try
@@ -35,26 +35,26 @@ namespace ProfitTest.Application.Handlers.Products
                 );
 
                 if (product == null)
-                    throw new InvalidOperationException($"Не удалось создать товар: {error}");
+                    throw new InvalidOperationException($"РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ С‚РѕРІР°СЂ: {error}");
 
                 await _repository.AddAsync(product);
-                _logger.LogInformation("Товар создан: {ProductId}", product.Id);
+                _logger.LogInformation("РўРѕРІР°СЂ СЃРѕР·РґР°РЅ: {ProductId}", product.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при обработке сообщения о создании товара");
+                _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ СЃРѕРѕР±С‰РµРЅРёСЏ Рѕ СЃРѕР·РґР°РЅРёРё С‚РѕРІР°СЂР°");
                 throw;
             }
         }
 
-        // обновление товара
+        // РѕР±РЅРѕРІР»РµРЅРёРµ С‚РѕРІР°СЂР°
         public async Task HandleAsync(ProductUpdatedMessage message, CancellationToken cancellationToken)
         {
             try
             {
                 var product = await _repository.GetByIdAsync(message.Id);
                 if (product == null)
-                    throw new InvalidOperationException($"Товар с ID {message.Id} не найден");
+                    throw new InvalidOperationException($"РўРѕРІР°СЂ СЃ ID {message.Id} РЅРµ РЅР°Р№РґРµРЅ");
 
                 var (success, error) = product.Update(
                     message.Name,
@@ -64,29 +64,29 @@ namespace ProfitTest.Application.Handlers.Products
                 );
 
                 if (!success)
-                    throw new InvalidOperationException($"Не удалось обновить товар: {error}");
+                    throw new InvalidOperationException($"РќРµ СѓРґР°Р»РѕСЃСЊ РѕР±РЅРѕРІРёС‚СЊ С‚РѕРІР°СЂ: {error}");
 
                 await _repository.UpdateAsync(product);
-                _logger.LogInformation("Товар обновлен: {ProductId}", product.Id);
+                _logger.LogInformation("РўРѕРІР°СЂ РѕР±РЅРѕРІР»РµРЅ: {ProductId}", product.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при обработке сообщения об обновлении товара");
+                _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕР±РЅРѕРІР»РµРЅРёРё С‚РѕРІР°СЂР°");
                 throw;
             }
         }
 
-        // удаление товара
+        // СѓРґР°Р»РµРЅРёРµ С‚РѕРІР°СЂР°
         public async Task HandleAsync(ProductDeletedMessage message, CancellationToken cancellationToken)
         {
             try
             {
                 await _repository.DeleteAsync(message.Id);
-                _logger.LogInformation("Товар удален: {ProductId}", message.Id);
+                _logger.LogInformation("РўРѕРІР°СЂ СѓРґР°Р»РµРЅ: {ProductId}", message.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при обработке сообщения об удалении товара");
+                _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± СѓРґР°Р»РµРЅРёРё С‚РѕРІР°СЂР°");
                 throw;
             }
         }
