@@ -50,6 +50,12 @@ services.AddDbContext<ProfitTestDbContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ProfitTestDbContext>();
+    dbContext.Database.Migrate();
+}
+
 // Middleware
 if (app.Environment.IsDevelopment())
 {
