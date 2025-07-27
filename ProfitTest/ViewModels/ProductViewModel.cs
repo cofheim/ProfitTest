@@ -21,6 +21,12 @@ namespace ProfitTest.ViewModels
         [ObservableProperty]
         private string _searchQuery;
 
+        [ObservableProperty]
+        private DateTime? _filterStartDate;
+
+        [ObservableProperty]
+        private DateTime? _filterEndDate;
+
         public ProductViewModel(ApiClient apiClient, DialogService dialogService)
         {
             _apiClient = apiClient;
@@ -49,6 +55,17 @@ namespace ProfitTest.ViewModels
             }
 
             var products = await _apiClient.SearchByNameAsync(SearchQuery);
+            Products.Clear();
+            foreach (var product in products)
+            {
+                Products.Add(product);
+            }
+        }
+
+        [RelayCommand]
+        private async Task FilterByPeriod()
+        {
+            var products = await _apiClient.FilterByPeriodAsync(FilterStartDate, FilterEndDate);
             Products.Clear();
             foreach (var product in products)
             {

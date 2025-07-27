@@ -44,17 +44,20 @@ namespace ProfitTest.Persistence.Repositories
         // фильтрация по периоду
         public async Task<List<Product>> FilterByPeriodAsync(DateTime start, DateTime? end)
         {
-            // запрос где период действия цены (ПДЦ) ОТ меньше чем стартовое значение и ((ПДЦ) ДО имеет значение или ПДЦ больше либо равно стартовому значению
-            var query = _context.Products.Where(x => 
-                (x.PriceValidFrom <= start) && 
-                (!x.PriceValidTo.HasValue || x.PriceValidTo >= start));
+            var query = _context.Products.AsQueryable();
 
-            if (end.HasValue)
-            {
-                query = query.Where(x => 
-                    x.PriceValidFrom <= end.Value && 
-                    (!x.PriceValidTo.HasValue || x.PriceValidTo >= end.Value));
-            }
+            // Логика для поиска пересекающихся интервалов:
+            // Продукт активен в искомом периоде, если:
+            // 1. Его дата начала <= Дате конца фильтра
+            // 2. Его дата конца >= Дате начала фильтра
+
+            // Устанавливаем конец дня для конечной даты фильтра, чтобы включить весь день.
+            var effectiveEnd = end?.Date.AddDays(1).AddTicks(-1);
+
+            query = query.Where(p =>
+                (!effectiveEnd.HasValue || p.PriceValidFrom <= effectiveEnd.Value) &&
+                (p.PriceValidTo == null || p.PriceValidTo >= start.Date)
+            );
 
             // материализуем запрос и сохраняем в "entities"
             var entities = await query.ToListAsync();

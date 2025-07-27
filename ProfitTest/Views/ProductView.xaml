@@ -14,8 +14,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="300" />
+            <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="200" />
             <Button Content="Поиск" Command="{Binding SearchProductsCommand}" Margin="10,0,0,0"/>
+            <Label Content="С:" Margin="10,0,0,0"/>
+            <DatePicker SelectedDate="{Binding FilterStartDate}" Width="120"/>
+            <Label Content="По:" Margin="5,0,0,0"/>
+            <DatePicker SelectedDate="{Binding FilterEndDate}" Width="120"/>
+            <Button Content="Фильтровать" Command="{Binding FilterByPeriodCommand}" Margin="10,0,0,0"/>
             <Button Content="Показать все" Command="{Binding ShowAllProductsCommand}" Margin="10,0,0,0"/>
         </StackPanel>
 

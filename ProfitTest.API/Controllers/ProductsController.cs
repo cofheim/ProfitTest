@@ -131,9 +131,12 @@ namespace ProfitTest.API.Controllers
             [FromQuery] DateTime? start,
             [FromQuery] DateTime? end)
         {
+            var utcStart = start.HasValue ? DateTime.SpecifyKind(start.Value, DateTimeKind.Utc) : (DateTime?)null;
+            var utcEnd = end.HasValue ? DateTime.SpecifyKind(end.Value, DateTimeKind.Utc) : (DateTime?)null;
+
             var (success, products, error) = await _productService.FilterByPeriodAsync(
-                start ?? DateTime.UtcNow,
-                end);
+                utcStart ?? DateTime.UtcNow,
+                utcEnd);
 
             if (!success)
             {

@@ -61,7 +61,9 @@ namespace ProfitTest.Services
 
         public async Task<IEnumerable<ProductResponse>> FilterByPeriodAsync(DateTime? start, DateTime? end)
         {
-            var queryString = $"start={start:o}&end={end:o}";
+            var utcStart = start?.ToUniversalTime();
+            var utcEnd = end?.ToUniversalTime();
+            var queryString = $"start={utcStart:o}&end={utcEnd:o}";
             var response = await _httpClient.GetAsync($"{BaseUrl}/api/products/filter?{queryString}");
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
