@@ -1,26 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ProfitTest.Contracts.Responses.Products;
 using System;
-using System.ComponentModel;
 
 namespace ProfitTest.ViewModels
 {
-    public class ProductEditModel : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler? PropertyChanged;
-        private Guid _id;
-        private string _name = string.Empty;
-        private decimal _price;
-        private DateTime _priceValidFrom = DateTime.UtcNow;
-        private DateTime? _priceValidTo;
-
-        public Guid Id { get => _id; set { _id = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id))); } }
-        public string Name { get => _name; set { _name = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name))); } }
-        public decimal Price { get => _price; set { _price = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Price))); } }
-        public DateTime PriceValidFrom { get => _priceValidFrom; set { _priceValidFrom = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PriceValidFrom))); } }
-        public DateTime? PriceValidTo { get => _priceValidTo; set { _priceValidTo = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PriceValidTo))); } }
-    }
-
     public partial class ProductEditorViewModel : ViewModelBase
     {
         private ProductEditModel _product = new();
@@ -38,13 +21,6 @@ namespace ProfitTest.ViewModels
         }
 
         public Action<bool?>? SetDialogResult { get; set; }
-
-        public ProductEditorViewModel()
-        {
-            SaveCommand = new RelayCommand(SaveChanges);
-        }
-        
-        public IRelayCommand SaveCommand { get; }
         
         public void SetProduct(ProductEditModel model)
         {
@@ -52,9 +28,9 @@ namespace ProfitTest.ViewModels
             Title = model.Id == Guid.Empty ? "Добавление товара" : "Редактирование товара";
         }
 
-        private void SaveChanges()
+        [RelayCommand]
+        private void Save()
         {
-            // TODO: Add validation
             SetDialogResult?.Invoke(true);
         }
     }

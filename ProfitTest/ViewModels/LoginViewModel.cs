@@ -8,6 +8,9 @@ namespace ProfitTest.ViewModels
 {
     public partial class LoginViewModel : ViewModelBase
     {
+        private readonly ApiClient _apiClient;
+        private readonly NavigationService _navigationService;
+
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
         private string _username;
@@ -18,9 +21,6 @@ namespace ProfitTest.ViewModels
 
         [ObservableProperty]
         private string _errorMessage;
-
-        private readonly ApiClient _apiClient;
-        private readonly NavigationService _navigationService;
 
         public LoginViewModel(ApiClient apiClient, NavigationService navigationService)
         {

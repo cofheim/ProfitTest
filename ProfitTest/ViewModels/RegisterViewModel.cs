@@ -8,20 +8,16 @@ namespace ProfitTest.ViewModels
 {
     public partial class RegisterViewModel : ViewModelBase
     {
+        private readonly ApiClient _apiClient;
+        private readonly NavigationService _navigationService;
+
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(RegisterCommand))]
         private string _username;
 
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(RegisterCommand))]
-        private string _password;
-
-        [ObservableProperty]
         private string _errorMessage;
-
-        private readonly ApiClient _apiClient;
-        private readonly NavigationService _navigationService;
-
+        
         public RegisterViewModel(ApiClient apiClient, NavigationService navigationService)
         {
             _apiClient = apiClient;
@@ -33,7 +29,7 @@ namespace ProfitTest.ViewModels
         {
             if (passwordBox is null || string.IsNullOrEmpty(passwordBox.Password) || string.IsNullOrEmpty(Username))
             {
-                ErrorMessage = "Username and password are required.";
+                ErrorMessage = "Имя пользователя и пароль обязательны.";
                 return;
             }
             try
@@ -43,15 +39,10 @@ namespace ProfitTest.ViewModels
             }
             catch (System.Exception ex)
             {
-                ErrorMessage = $"Registration failed: {ex.Message}";
+                ErrorMessage = $"Ошибка регистрации: {ex.Message}";
             }
         }
-
-        private bool CanRegister(PasswordBox passwordBox)
-        {
-            return !string.IsNullOrEmpty(Username) && passwordBox is not null && !string.IsNullOrEmpty(passwordBox.Password);
-        }
-
+        
         [RelayCommand]
         private void NavigateToLogin()
         {

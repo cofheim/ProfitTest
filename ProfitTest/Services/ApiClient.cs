@@ -15,7 +15,7 @@ namespace ProfitTest.Services
     public class ApiClient
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "http://localhost:5006"; // TODO: Move to config
+        private const string BaseUrl = "http://localhost:5006";
 
         public ApiClient(HttpClient httpClient)
         {

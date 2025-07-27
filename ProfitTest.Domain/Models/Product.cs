@@ -24,12 +24,11 @@ namespace ProfitTest.Domain.Models
 
         public Guid Id { get; }
         public string Name { get; private set; }
-        public decimal Price { get; private set; } // ����
-        public DateTime PriceValidFrom { get; private set; } // ������ �������� ���� ��
-        public DateTime? PriceValidTo { get; private set; } // ������ �������� ���� ��
+        public decimal Price { get; private set; } 
+        public DateTime PriceValidFrom { get; private set; }
+        public DateTime? PriceValidTo { get; private set; } 
         public DateTime CreatedAt { get; }
 
-        // ��������� ����� ��� �������� ������
         public static (Product? Product, string Error) Create(
             Guid? id,
             string name,
@@ -63,7 +62,6 @@ namespace ProfitTest.Domain.Models
             return (product, error);
         }
 
-        // ��������� ����� ��� ���������� ������
         public (bool Success, string Error) Update(
             string name,
             decimal price,
@@ -71,13 +69,13 @@ namespace ProfitTest.Domain.Models
             DateTime? priceValidTo = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                return (false, "�������� ������ �� ����� ���� ������");
+                return (false, "Имя не может быть пустым");
 
             if (price <= 0)
-                return (false, "���� ������ ���� ������ ����");
+                return (false, "Цена товара должна быть больше нуля");
 
             if (priceValidTo.HasValue && priceValidFrom >= priceValidTo.Value)
-                return (false, "���� ������ �������� ���� ������ ���� ������ ���� ���������");
+                return (false, "Дата начала действия цены должна быть раньше даты окончания");
 
             Name = name;
             Price = price;

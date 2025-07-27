@@ -5,7 +5,7 @@ namespace ProfitTest.Persistence.Mappings
 {
     public static class ProductMapping
     {
-        // �� �������� � ��������
+        // из доменной модели в сущность
         public static ProductEntity ToEntity(this Product domain)
         {
             if (domain == null)
@@ -22,7 +22,8 @@ namespace ProfitTest.Persistence.Mappings
             };
         }
 
-        // �� �������� � ��������
+
+        // Из сущности в доменную модель
         public static Product ToDomain(this ProductEntity entity)
         {
             if (entity == null)
@@ -37,7 +38,7 @@ namespace ProfitTest.Persistence.Mappings
             );
 
             if (result.Product == null)
-                throw new InvalidOperationException($"���������� ������������� �������� � �������� ������: {result.Error}");
+                throw new InvalidOperationException($"Невозможно преобразовать сущность в доменную модель: {result.Error}");
 
             return result.Product;
         }

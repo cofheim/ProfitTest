@@ -61,7 +61,7 @@ namespace ProfitTest.ViewModels
                 Products.Add(product);
             }
         }
-
+        
         [RelayCommand]
         private async Task FilterByPeriod()
         {
@@ -132,6 +132,7 @@ namespace ProfitTest.ViewModels
         [RelayCommand]
         private async Task DeleteProduct()
         {
+            if (SelectedProduct == null) return;
             await _apiClient.DeleteProductAsync(SelectedProduct.Id);
             await LoadProducts();
         }

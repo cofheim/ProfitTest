@@ -46,11 +46,6 @@ namespace ProfitTest.Persistence.Repositories
         {
             var query = _context.Products.AsQueryable();
 
-            // Логика для поиска пересекающихся интервалов:
-            // Продукт активен в искомом периоде, если:
-            // 1. Его дата начала <= Дате конца фильтра
-            // 2. Его дата конца >= Дате начала фильтра
-
             // Устанавливаем конец дня для конечной даты фильтра, чтобы включить весь день.
             var effectiveEnd = end?.Date.AddDays(1).AddTicks(-1);
 
@@ -59,7 +54,7 @@ namespace ProfitTest.Persistence.Repositories
                 (p.PriceValidTo == null || p.PriceValidTo >= start.Date)
             );
 
-            // материализуем запрос и сохраняем в "entities"
+            // материализуем запрос и сохраняем в entities
             var entities = await query.ToListAsync();
             return entities.Select(x => x.ToDomain()).ToList(); // преобразуем сущности в доменные модели и материализуем
         }

@@ -15,15 +15,15 @@ namespace ProfitTest.ViewModels
     {
         private readonly NavigationService _navigationService;
 
+        [ObservableProperty]
+        private ViewModelBase _currentViewModel;
+
         public MainViewModel(NavigationService navigationService)
         {
             _navigationService = navigationService;
             _navigationService.CurrentViewModelChanged += OnCurrentViewModelChanged;
             _navigationService.NavigateTo<LoginViewModel>();
         }
-
-        [ObservableProperty]
-        private ViewModelBase _currentViewModel;
 
         private void OnCurrentViewModelChanged()
         {

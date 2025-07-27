@@ -23,7 +23,7 @@ namespace ProfitTest.Domain.Models
             return Create(userName, passwordHash, null, null, null);
         }
 
-        // Фабричный метод для создания пользователя с существующими значениями
+        // Фабричный метод для создания пользователя с существующими значениями (для восстановления)
         public static (User? User, string Error) Create(string userName, string passwordHash, Guid? id, DateTime? createdAt, DateTime? lastLoginAt)
         {
             var error = string.Empty;
