@@ -9,5 +9,6 @@ namespace ProfitTest.Application.Interfaces
         Task<(bool Success, string Error)> DeleteProductAsync(Guid id);
         Task<(bool Success, List<Product>? Products, string Error)> SearchByNameAsync(string nameQuery);
         Task<(bool Success, List<Product>? Products, string Error)> FilterByPeriodAsync(DateTime start, DateTime? end);
+        Task<List<Product>> GetAllAsync();
     }
 }

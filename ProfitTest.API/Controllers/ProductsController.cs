@@ -31,11 +31,14 @@ namespace ProfitTest.API.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
         {
+            var priceValidFrom = DateTime.SpecifyKind(request.PriceValidFrom, DateTimeKind.Utc);
+            var priceValidTo = request.PriceValidTo.HasValue ? DateTime.SpecifyKind(request.PriceValidTo.Value, DateTimeKind.Utc) : (DateTime?)null;
+
             var (success, error) = await _productService.CreateProductAsync(
                 request.Name,
                 request.Price,
-                request.PriceValidFrom,
-                request.PriceValidTo);
+                priceValidFrom,
+                priceValidTo);
 
             if (!success)
                 return BadRequest(new ErrorResponse(error));
@@ -54,12 +57,15 @@ namespace ProfitTest.API.Controllers
             if (id != request.Id)
                 return BadRequest(new ErrorResponse("ID в URL не соответствует ID в запросе"));
 
+            var priceValidFrom = DateTime.SpecifyKind(request.PriceValidFrom, DateTimeKind.Utc);
+            var priceValidTo = request.PriceValidTo.HasValue ? DateTime.SpecifyKind(request.PriceValidTo.Value, DateTimeKind.Utc) : (DateTime?)null;
+
             var (success, error) = await _productService.UpdateProductAsync(
                 request.Id,
                 request.Name,
                 request.Price,
-                request.PriceValidFrom,
-                request.PriceValidTo);
+                priceValidFrom,
+                priceValidTo);
 
             if (!success)
                 return BadRequest(new ErrorResponse(error));
@@ -105,9 +111,9 @@ namespace ProfitTest.API.Controllers
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
-                    PriceValidFrom = p.PriceValidFrom,
-                    PriceValidTo = p.PriceValidTo,
-                    CreatedAt = p.CreatedAt,
+                    PriceValidFrom = p.PriceValidFrom.ToLocalTime(),
+                    PriceValidTo = p.PriceValidTo?.ToLocalTime(),
+                    CreatedAt = p.CreatedAt.ToLocalTime(),
                     IsPriceActive = p.IsPriceActiveAt(DateTime.UtcNow)
                 }).ToList(),
                 AppliedNameFilter = nameQuery
@@ -142,15 +148,36 @@ namespace ProfitTest.API.Controllers
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
-                    PriceValidFrom = p.PriceValidFrom,
-                    PriceValidTo = p.PriceValidTo,
-                    CreatedAt = p.CreatedAt,
+                    PriceValidFrom = p.PriceValidFrom.ToLocalTime(),
+                    PriceValidTo = p.PriceValidTo?.ToLocalTime(),
+                    CreatedAt = p.CreatedAt.ToLocalTime(),
                     IsPriceActive = p.IsPriceActiveAt(DateTime.UtcNow)
                 }).ToList(),
                 AppliedPeriodStart = start,
                 AppliedPeriodEnd = end
             };
 
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(ProductListResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll()
+        {
+            var products = await _productService.GetAllAsync();
+            var response = new ProductListResponse
+            {
+                Items = products.Select(p => new ProductResponse
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    PriceValidFrom = p.PriceValidFrom.ToLocalTime(),
+                    PriceValidTo = p.PriceValidTo?.ToLocalTime(),
+                    CreatedAt = p.CreatedAt.ToLocalTime(),
+                    IsPriceActive = p.IsPriceActiveAt(DateTime.UtcNow)
+                }).ToList()
+            };
             return Ok(response);
         }
     }

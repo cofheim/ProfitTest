@@ -2,6 +2,16 @@ namespace ProfitTest.Domain.Models
 {
     public class Product
     {
+        private Product(Guid id, string name, decimal price, DateTime priceValidFrom, DateTime? priceValidTo = null)
+        {
+            Id = id;
+            Name = name;
+            Price = price;
+            PriceValidFrom = priceValidFrom;
+            PriceValidTo = priceValidTo;
+            CreatedAt = DateTime.UtcNow;
+        }
+
         private Product(string name, decimal price, DateTime priceValidFrom, DateTime? priceValidTo = null)
         {
             Id = Guid.NewGuid();
@@ -14,13 +24,14 @@ namespace ProfitTest.Domain.Models
 
         public Guid Id { get; }
         public string Name { get; private set; }
-        public decimal Price { get; private set; } // цена
-        public DateTime PriceValidFrom { get; private set; } // период действия цены ОТ
-        public DateTime? PriceValidTo { get; private set; } // период действия цены ДО
+        public decimal Price { get; private set; } // пїЅпїЅпїЅпїЅ
+        public DateTime PriceValidFrom { get; private set; } // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ
+        public DateTime? PriceValidTo { get; private set; } // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ
         public DateTime CreatedAt { get; }
 
-        // фабричный метод для создания товара
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         public static (Product? Product, string Error) Create(
+            Guid? id,
             string name,
             decimal price,
             DateTime priceValidFrom,
@@ -30,27 +41,29 @@ namespace ProfitTest.Domain.Models
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                error = "Название товара не может быть пустым";
+                error = "РќР°Р·РІР°РЅРёРµ С‚РѕРІР°СЂР° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј";
                 return (null, error);
             }
 
             if (price <= 0)
             {
-                error = "Цена должна быть больше нуля";
+                error = "Р¦РµРЅР° С‚РѕРІР°СЂР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ Р±РѕР»СЊС€Рµ РЅСѓР»СЏ";
                 return (null, error);
             }
 
             if (priceValidTo.HasValue && priceValidFrom >= priceValidTo.Value)
             {
-                error = "Дата начала действия цены должна быть раньше даты окончания";
+                error = "Р”Р°С‚Р° РЅР°С‡Р°Р»Р° РґРµР№СЃС‚РІРёСЏ С†РµРЅС‹ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ СЂР°РЅСЊС€Рµ РґР°С‚С‹ РѕРєРѕРЅС‡Р°РЅРёСЏ";
                 return (null, error);
             }
 
-            var product = new Product(name, price, priceValidFrom, priceValidTo);
+            var product = id.HasValue
+                ? new Product(id.Value, name, price, priceValidFrom, priceValidTo)
+                : new Product(name, price, priceValidFrom, priceValidTo);
             return (product, error);
         }
 
-        // фабричный метод для обновления товара
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         public (bool Success, string Error) Update(
             string name,
             decimal price,
@@ -58,13 +71,13 @@ namespace ProfitTest.Domain.Models
             DateTime? priceValidTo = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                return (false, "Название товара не может быть пустым");
+                return (false, "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
 
             if (price <= 0)
-                return (false, "Цена должна быть больше нуля");
+                return (false, "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ");
 
             if (priceValidTo.HasValue && priceValidFrom >= priceValidTo.Value)
-                return (false, "Дата начала действия цены должна быть раньше даты окончания");
+                return (false, "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
 
             Name = name;
             Price = price;

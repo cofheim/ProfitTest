@@ -28,6 +28,7 @@ namespace ProfitTest.Application.Handlers.Products
             try
             {
                 var (product, error) = Product.Create(
+                    null, // id генерируется внутри
                     message.Name,
                     message.Price,
                     message.PriceValidFrom,

@@ -5,7 +5,7 @@ namespace ProfitTest.Persistence.Mappings
 {
     public static class ProductMapping
     {
-        // из доменной в сущность
+        // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         public static ProductEntity ToEntity(this Product domain)
         {
             if (domain == null)
@@ -22,13 +22,14 @@ namespace ProfitTest.Persistence.Mappings
             };
         }
 
-        // из сущности в доменную
+        // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         public static Product ToDomain(this ProductEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
             var result = Product.Create(
+                entity.Id,
                 entity.Name,
                 entity.Price,
                 entity.PriceValidFrom,
@@ -36,7 +37,7 @@ namespace ProfitTest.Persistence.Mappings
             );
 
             if (result.Product == null)
-                throw new InvalidOperationException($"Невозможно преобразовать сущность в доменную модель: {result.Error}");
+                throw new InvalidOperationException($"пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: {result.Error}");
 
             return result.Product;
         }

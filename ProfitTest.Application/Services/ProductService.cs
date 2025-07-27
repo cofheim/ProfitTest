@@ -150,5 +150,10 @@ namespace ProfitTest.Application.Services
                 return (false, null, "Произошла ошибка при фильтрации товаров");
             }
         }
+
+        public async Task<List<Product>> GetAllAsync()
+        {
+            return await _productRepository.GetAllAsync();
+        }
     }
 }
