@@ -2,17 +2,20 @@
 1. **Клонируйте репозиторий:**
    ```sh
    git clone https://github.com/cofheim/ProfitTest.git
+   ```
+2. **Перейдите в корневую папку:**
+   ```sh
    cd ProfitTest
    ```
 
-2. **Запустите Docker-контейнеры:**
+3. **Запустите Docker-контейнеры:**
    Запустите Docker Desktop и выполните команду в корневой папке проекта (в ProfitTest):
    ```sh
    docker-compose up -d --build
    ```
    Эта команда соберёт образы и запустит контейнеры для API, PostgreSQL, Kafka и Zookeeper.
 
-3. **Запустите клиентское приложение:**
+4. **Запустите клиентское приложение:**
    - Откройте файл `ProfitTest.sln` в Visual Studio.
    - Установите проект `ProfitTest` в качестве запускаемого.
    - Запустите приложение.
