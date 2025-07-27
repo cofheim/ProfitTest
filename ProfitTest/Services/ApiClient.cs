@@ -27,7 +27,11 @@ namespace ProfitTest.Services
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"{BaseUrl}/api/auth/login", content);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Ошибка входа: {errorContent}");
+            }
 
             var responseContent = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<LoginResponse>(responseContent);

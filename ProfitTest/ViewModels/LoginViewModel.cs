@@ -28,24 +28,25 @@ namespace ProfitTest.ViewModels
             _navigationService = navigationService;
         }
 
-        [RelayCommand]
-        private async Task Login(PasswordBox passwordBox)
+        [RelayCommand(CanExecute = nameof(CanLogin))]
+        private async Task Login()
         {
-            if (passwordBox is null || string.IsNullOrEmpty(passwordBox.Password) || string.IsNullOrEmpty(Username))
-            {
-                ErrorMessage = "Username and password are required.";
-                return;
-            }
-
             try
             {
-                var response = await _apiClient.LoginAsync(new Contracts.Requests.Auth.LoginRequest { UserName = Username, Password = passwordBox.Password });
+                var response = await _apiClient.LoginAsync(new Contracts.Requests.Auth.LoginRequest { UserName = Username, Password = Password });
                 _apiClient.SetAuthorizationHeader(response.Token);
                 _navigationService.NavigateTo<ProductViewModel>();
             }
             catch (System.Exception ex)
             {
-                ErrorMessage = $"Login failed: {ex.Message}";
+                if (ex.Message.Contains("Invalid credentials") || ex.Message.Contains("400"))
+                {
+                    ErrorMessage = "Неверный логин или пароль.";
+                }
+                else
+                {
+                    ErrorMessage = "Произошла ошибка при входе.";
+                }
             }
         }
 
